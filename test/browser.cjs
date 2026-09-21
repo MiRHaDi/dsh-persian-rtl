@@ -1,0 +1,51 @@
+const { chromium } = require('playwright');
+const fs = require('node:fs');
+const assert = require('node:assert/strict');
+(async () => {
+  const url = process.env.DSH_TEST_URL;
+  if (!url || !['127.0.0.1', 'localhost', '[::1]'].includes(new URL(url).hostname)) throw new Error('Set DSH_TEST_URL to an isolated local DSH instance');
+  const browser = await chromium.launch({ channel: 'chrome', headless: true });
+  try {
+    const page = await browser.newPage({ locale: 'fa-IR', viewport: { width: 1440, height: 1000 } });
+    const errors = [];
+    page.on('pageerror', e => errors.push(e.message));
+    await page.goto(url);
+    await page.waitForTimeout(4000);
+    if (await page.getByRole('button', {name:'Continue',exact:true}).count()) await page.getByRole('button', {name:'Continue',exact:true}).click();
+    await page.waitForTimeout(600);
+    if (await page.getByRole('button', {name:'Configure later',exact:true}).count()) await page.getByRole('button', {name:'Configure later',exact:true}).click();
+    await page.getByRole('button', {name:'تنظیمات',exact:true}).click();
+    await page.waitForTimeout(500);
+    if (await page.getByRole('button', {name:'Configure later',exact:true}).count()) await page.getByRole('button', {name:'Configure later',exact:true}).click();
+    await page.getByRole('button', {name:'فارسی',exact:true}).click();
+    await page.getByText('English', {exact:true}).click();
+    await page.getByRole('button', {name:'English',exact:true}).waitFor();
+    assert.equal(await page.locator('html').getAttribute('dir'), null);
+    assert.equal(await page.locator('html').getAttribute('lang'), 'en');
+    await page.getByRole('button', {name:'English',exact:true}).click();
+    await page.getByText('فارسی', {exact:true}).click();
+    assert.equal(await page.locator('html').getAttribute('dir'), 'rtl');
+    assert.equal(await page.locator('html').getAttribute('lang'), 'fa');
+    const textChecks = await page.evaluate(() => {
+      const fixture = document.createElement('section');
+      fixture.style.cssText = 'position:fixed;left:-10000px;top:0';
+      fixture.innerHTML = '<p>سلام، DeepSeek 123</p><pre><code>const answer = 42;</code></pre><div class="xterm">echo test</div><div class="monaco-editor">const x = 1;</div><div class="cm-editor">const y = 2;</div>';
+      document.body.append(fixture);
+      const directions = [...fixture.querySelectorAll('pre,code,.xterm,.monaco-editor,.cm-editor')].map(e => getComputedStyle(e).direction);
+      const code = fixture.querySelector('code').firstChild;
+      const xs = [...code.textContent].map((_,i) => {const r=document.createRange();r.setStart(code,i);r.setEnd(code,i+1);return r.getBoundingClientRect().x;});
+      const paragraphBidi = getComputedStyle(fixture.querySelector('p')).unicodeBidi;
+      const result = {directions, paragraphBidi, codeCharactersInOrder: xs.every((x,i)=>i===0||x>=xs[i-1])};
+      fixture.remove();
+      return result;
+    });
+    assert.ok(textChecks.directions.every(d => d === 'ltr'));
+    assert.equal(textChecks.paragraphBidi, 'plaintext');
+    assert.ok(textChecks.codeCharactersInOrder);
+    assert.deepEqual(errors, []);
+    const result = {version:browser.version(),app:'DeepSeek Harness 0.1.6-alpha.2',dir:'rtl',lang:'fa',languageSwitch:'fa → en → fa passed',textChecks,errors};
+    fs.writeFileSync(__dirname + '/../docs/browser-result.json', JSON.stringify(result,null,2));
+    console.log(JSON.stringify(result,null,2));
+    await page.screenshot({ path: __dirname + '/../docs/persian-settings.png', fullPage: true });
+  } finally { await browser.close(); }
+})().catch(e => {console.error(e.message);process.exitCode=1});

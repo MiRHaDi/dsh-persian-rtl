@@ -1,0 +1,19 @@
+{
+  "version": "153.0.8010.52",
+  "app": "DeepSeek Harness 0.1.6-alpha.2",
+  "dir": "rtl",
+  "lang": "fa",
+  "languageSwitch": "fa → en → fa passed",
+  "textChecks": {
+    "directions": [
+      "ltr",
+      "ltr",
+      "ltr",
+      "ltr",
+      "ltr"
+    ],
+    "paragraphBidi": "plaintext",
+    "codeCharactersInOrder": true
+  },
+  "errors": []
+}

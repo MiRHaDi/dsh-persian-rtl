@@ -1,0 +1,58 @@
+{
+  "name": "dsh-persian-rtl",
+  "version": "0.1.0",
+  "description": "Community Persian language pack and bidirectional text support for DeepSeek Harness Web",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "lib",
+    "cordis.patch.yml",
+    "README.fa.md",
+    "NOTICE",
+    "scripts/build.mjs"
+  ],
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test test/*.test.mjs",
+    "prepack": "npm run build"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [
+        "@deepseek-ai/dsh-client-locale"
+      ],
+      "platform": "web",
+      "immediately": true
+    }
+  },
+  "author": "MiRHaDi",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MiRHaDi/dsh-persian-rtl.git"
+  },
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "persian",
+    "farsi",
+    "rtl",
+    "i18n"
+  ],
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0"
+  },
+  "devDependencies": {
+    "@deepseek-ai/dsh-client-locale": "0.1.6-alpha.2",
+    "happy-dom": "20.12.0"
+  }
+}

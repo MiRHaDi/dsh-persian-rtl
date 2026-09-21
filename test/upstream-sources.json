@@ -1,0 +1,11 @@
+{
+  "revision": "ddefc45fbc7f8e46dd73185e68295696d1297887",
+  "files": {
+    "sidebar": "packages/client/ui-sidebar/src/client/locales.ts",
+    "settings": "packages/client/ui-settings-general/src/client/locales.ts",
+    "workspace": "packages/client/ui-workspace/src/client/locales.ts",
+    "common": "packages/client/locale/src/locales/en.ts",
+    "settings.locale": "packages/client/locale/src/locales/settings.ts",
+    "chat": "packages/client/ui-chat/src/client/locale.ts"
+  }
+}
