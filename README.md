@@ -2,9 +2,11 @@
 
 [فارسی](README.fa.md) · Independent community plugin by [MiRHaDi](https://github.com/MiRHaDi)
 
-Adds **فارسی** to the Web language selector, translates **240 strings across six namespaces**, and enables right-to-left layout while Persian is selected. Code, keyboard shortcuts, terminal and editor containers remain left-to-right. The plugin uses the public locale API and has no runtime npm dependencies.
+Adds **فارسی** to the Web language selector, translates **395 strings across seven namespaces**, and enables right-to-left layout while Persian is selected. Code, keyboard shortcuts, terminal and editor containers remain left-to-right. The plugin uses the public locale API and has no runtime npm dependencies.
 
 ![Persian settings in the actual DeepSeek Harness Web app](docs/persian-settings.png)
+
+The conversation translations are **unreleased** on this branch. Release v0.1.0 contains the original 240 strings; the screenshot above documents that release. To test this branch, run `npm ci`, `npm test`, and `npm pack`, then install the resulting local tarball.
 
 ## Install
 
@@ -33,8 +35,9 @@ Remove with `dsh plugin --profile web remove dsh-persian-rtl`, then reload the p
 | `settings` | 29 | Complete |
 | `workspace` | 64 | Complete |
 | `chat` | 104 | Complete |
+| `conversation` | 155 | Complete |
 
-Other namespaces use DSH's English fallback. This is **not a complete translation of the application**: onboarding, provider configuration, composer controls and several settings panels remain English. The screenshot intentionally shows this scope. Locale-specific date conversion, Persian digits, speech, and the terminal UI are not implemented. Dates retain the upstream calendar. Singular and plural count templates preserve their parameters and use natural Persian count nouns.
+Other namespaces use DSH's English fallback. This is **not a complete translation of the application**: onboarding, provider configuration and several settings panels remain English. The screenshot intentionally shows this scope. Locale-specific date conversion, Persian digits, speech, and the terminal UI are not implemented. Dates retain the upstream calendar. Singular and plural count templates preserve their parameters and use natural Persian count nouns.
 
 RTL uses document direction and scoped CSS, not string reversal or inserted directional control characters. Code containers (`pre`, `code`, `kbd`, `samp`, xterm, Monaco and CodeMirror) use LTR isolation. Paragraphs and textareas use `unicode-bidi: plaintext` to handle mixed Persian and Latin text. These selectors are not proof that every third-party renderer supports RTL; report a reproducible component when one does not.
 
@@ -46,13 +49,21 @@ npm run build
 npm test
 ```
 
-Six automated tests cover every dictionary key and placeholder against a pinned upstream fixture, real published `LocaleRuntime` behavior, `fa-IR` negotiation, English fallback, repeated language changes, unload/reload, restoration of direction, and listener disposal. The runtime tests load the published client factory; unused rendering dependencies throw if called, so they do not pretend to test the settings component.
+Eight automated tests cover every dictionary key and placeholder against a pinned upstream fixture, real published `LocaleRuntime` behavior, `fa-IR` negotiation, English fallback, repeated language changes, unload/reload, restoration of direction, and listener disposal. The runtime tests load the published client factory; unused rendering dependencies throw if called, so they do not pretend to test the settings component.
 
-The plugin was also installed through the real `dsh plugin` command and exercised in the actual Web app using headless system Chrome: Settings language changes `fa → en → fa`, `lang`/`dir`, and zero page errors. LTR code/editor CSS was checked with temporary DOM fixtures under the live plugin; these were removed before the screenshot. No model request, production account or user workspace was used. Full conversation execution and every viewport/theme were not tested.
+The original v0.1.0 plugin was also installed through the real `dsh plugin` command and exercised in the actual Web app using headless system Chrome: Settings language changes `fa → en → fa`, `lang`/`dir`, and zero page errors. LTR code/editor CSS was checked with temporary DOM fixtures under the live plugin; these were removed before the screenshot. No model request, production account or user workspace was used. Full conversation execution and every viewport/theme were not tested.
 
 For the browser smoke, install Playwright 1.62.1 separately or locally without saving it, set `DSH_TEST_URL` to your isolated running instance's local authenticated URL and run `node test/browser.cjs`. This opens only headless Chrome. Keep that URL private. The test changes only the test instance's language and onboarding preferences. Use the upstream browser-picker overlay when starting an automated test instance.
 
-English fixture source: DeepSeek Harness commit `ddefc45fbc7f8e46dd73185e68295696d1297887`. To update, compare the six source dictionaries listed in `test/upstream-sources.json`; preserve placeholder names and multiplicity. Translation and code were prepared with AI assistance and reviewed through the validation above; Persian speaker feedback is welcome.
+The conversation regression test exercises all 155 messages at four counts (620 cases), mixed Persian/Latin parameters, and English restoration after unloading. Queueing and steering retain distinct labels.
+
+The unreleased conversation pack was also loaded into the actual DSH 0.1.6-alpha.2 Web app using a local plugin overlay and headless installed Chrome 153.0.8010.54. A mixed Persian/Latin draft survived `fa → en → fa`; Send changed language; desktop (1280×900) and narrow (360×780) captures had no page errors or document overflow. No message was sent. The existing mode selector truncates its label at the narrow width; this translation change does not fix that layout limitation.
+
+To repeat the conversation smoke, use an isolated instance with onboarding completed and an existing test workspace. Install Playwright separately, set `DSH_TEST_URL` (private local authenticated URL), `DSH_TEST_WORKSPACE` (the workspace name), and optionally `DSH_TEST_OUTPUT` (capture directory), then run `node test/browser-conversation.cjs`. It refuses a nonempty draft, never sends it, and clears the test draft on success.
+
+The upstream master snapshot `639ed015397290b3745d163aafe02ffee4aa3f84` has 369 conversation keys and changes three existing messages. Coverage and compatibility here are for the pinned alpha revision, not that newer snapshot.
+
+English fixture source: DeepSeek Harness commit `ddefc45fbc7f8e46dd73185e68295696d1297887`. To update, compare the seven source dictionaries listed in `test/upstream-sources.json`; preserve placeholder names and multiplicity. Translation and code were prepared with AI assistance and reviewed through the validation above; Persian speaker feedback is welcome.
 
 ## Contributing
 

@@ -12,6 +12,7 @@ const upstream = JSON.parse(readFileSync(new URL('./upstream-en.json', import.me
 const placeholders = text => [...text.matchAll(/\{(\w+)\}/g)].map(m => m[1]).sort();
 
 test('all entries preserve upstream keys and placeholder multiplicity', () => {
+  assert.deepEqual(Object.keys(dictionaries).sort(), Object.keys(upstream).sort());
   for (const [ns, dict] of Object.entries(upstream)) {
     assert.deepEqual(Object.keys(dictionaries[ns]).sort(), Object.keys(dict).sort());
     for (const [key, value] of Object.entries(dict)) {
@@ -20,6 +21,46 @@ test('all entries preserve upstream keys and placeholder multiplicity', () => {
       assert.doesNotMatch(dictionaries[ns][key], /[\u202a-\u202e\u2066-\u2069]/u);
     }
   }
+});
+
+test('published LocaleRuntime: every conversation message interpolates and restores English on unload', () => {
+  const f = fixture();
+  f.plugin.apply(f.ctx);
+  f.ctx.locale.setLocale('fa');
+  const translate = f.ctx.locale.bind('conversation');
+  const format = (text, params) => text.replace(/\{(\w+)\}/g, (_, name) => params[name]);
+  try {
+    for (const count of [0, 1, 2, 123]) {
+      for (const [key, value] of Object.entries(dictionaries.conversation)) {
+        const params = Object.fromEntries(placeholders(value).map(name => [name,
+          ['name', 'label', 'reason', 'command', 'sessionId', 'signal'].includes(name)
+            ? 'نمونه OpenAI <script>& /file.txt' : String(count)]));
+        assert.equal(translate(key, params), format(value, params), `${key} count=${count}`);
+      }
+    }
+    f.dispose();
+    const english = f.ctx.locale.bind('conversation');
+    for (const [key, value] of Object.entries(upstream.conversation)) {
+      const params = Object.fromEntries(placeholders(value).map(name => [name, 'test']));
+      assert.equal(english(key, params), format(value, params), `unload: ${key}`);
+    }
+  } finally { f.dispose(); }
+});
+
+test('conversation distinguishes queueing from steering and preserves explicit English preference', () => {
+  const f = fixture('fa-IR');
+  f.ctx.locale.setLocale('en');
+  f.plugin.apply(f.ctx);
+  try {
+    assert.equal(f.ctx.locale.getSnapshot().active, 'en');
+    assert.equal(f.ctx.locale.bind('conversation')('input.send'), 'Send message');
+    assert.equal(f.window.document.documentElement.hasAttribute('dir'), false);
+    f.ctx.locale.setLocale('fa');
+    const translate = f.ctx.locale.bind('conversation');
+    assert.equal(translate('input.send.queue'), 'افزودن پیام به صف');
+    assert.equal(translate('input.send.steer'), 'هدایت اجرای جاری با پیام');
+    assert.equal(translate('command.attachmentsUnsupported', {command: 'plan'}), '/plan پیوست نمی‌پذیرد؛ ابتدا پیوست‌ها را حذف کنید');
+  } finally { f.dispose(); }
 });
 
 function fixture(browserLanguage = 'en', dir = null) {

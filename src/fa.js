@@ -1,5 +1,8 @@
-/** Complete dictionaries for six namespaces at the pinned upstream revision. */
+import { conversation } from './conversation-fa.js';
+
+/** Complete dictionaries for seven namespaces at the pinned upstream revision. */
 export const dictionaries = {
+  conversation,
   sidebar: {
     'session.new': 'نشست جدید', 'session.new.label': 'نشست جدید',
     'toggle.open': 'باز کردن نوار کناری', 'toggle.collapse': 'جمع کردن نوار کناری', 'panels.label': 'پنل‌های عمومی',
