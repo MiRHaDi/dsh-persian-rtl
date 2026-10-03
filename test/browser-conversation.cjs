@@ -17,14 +17,18 @@ async function verifyConversation(page, output, workspace) {
   await page.getByRole('button', { name: 'تنظیمات', exact: true }).click();
   await page.getByRole('button', { name: 'فارسی', exact: true }).click();
   await page.getByText('English', { exact: true }).click();
+  await page.waitForFunction(() => document.documentElement.lang === 'en' && !document.documentElement.hasAttribute('dir'));
   assert.equal(await page.locator('html').getAttribute('dir'), null);
   assert.equal(await page.locator('html').getAttribute('lang'), 'en');
+  assert.equal(await page.locator('[data-slot="conversation.hero.agentPreset"]').evaluate(slot => getComputedStyle(slot.parentElement).flexWrap), 'nowrap');
   assert.equal(await page.getByRole('button', { name: 'Send message', exact: true }).count(), 1);
   await page.getByRole('button', { name: 'English', exact: true }).click();
   await page.getByText('فارسی', { exact: true }).click();
+  await page.waitForFunction(() => document.documentElement.lang === 'fa' && document.documentElement.dir === 'rtl');
   await page.getByRole('button', { name: 'بستن', exact: true }).click();
   assert.equal(await page.locator('html').getAttribute('dir'), 'rtl');
   assert.equal(await page.locator('html').getAttribute('lang'), 'fa');
+  assert.equal(await page.locator('[data-slot="conversation.hero.agentPreset"]').evaluate(slot => getComputedStyle(slot.parentElement).flexWrap), 'wrap');
   assert.equal(await editor.innerText(), draft);
   fs.mkdirSync(output, { recursive: true });
   await page.screenshot({ path: path.join(output, 'persian-desktop.png'), fullPage: true });
@@ -34,9 +38,33 @@ async function verifyConversation(page, output, workspace) {
   const layout = await page.evaluate(() => ({ viewport: innerWidth, documentWidth: document.documentElement.scrollWidth }));
   assert.equal(layout.documentWidth, layout.viewport);
   assert.equal(await editor.innerText(), draft);
+  const presetLabel = page.locator('[data-slot="conversation.hero.agentPreset"] button[aria-haspopup="menu"] > span');
+  const preset = await presetLabel.evaluate(label => ({ text: label.textContent, available: label.clientWidth, required: label.scrollWidth }));
+  assert.ok(preset.required <= preset.available, `Preset label is clipped: ${JSON.stringify(preset)}`);
   await page.screenshot({ path: path.join(output, 'persian-narrow.png'), fullPage: true });
+  const widths = [];
+  for (const width of [320, 360, 768, 1280]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.waitForTimeout(300);
+    const sample = await presetLabel.evaluate(label => {
+      const button = label.closest('button');
+      const box = button.getBoundingClientRect();
+      return { viewport: innerWidth, documentWidth: document.documentElement.scrollWidth,
+        required: label.scrollWidth, available: label.clientWidth, left: box.left, right: box.right };
+    });
+    assert.equal(sample.documentWidth, width);
+    assert.ok(sample.required <= sample.available, `Clipped at ${width}px`);
+    assert.ok(sample.left >= 0 && sample.right <= width, `Offscreen at ${width}px`);
+    widths.push(sample);
+  }
+  await page.setViewportSize({ width: 360, height: 780 });
+  const presetButton = page.locator('[data-slot="conversation.hero.agentPreset"] button[aria-haspopup="menu"]');
+  await presetButton.click();
+  assert.equal(await presetButton.getAttribute('aria-expanded'), 'true');
+  await page.keyboard.press('Escape');
+  assert.equal(await presetButton.getAttribute('aria-expanded'), 'false');
   await editor.fill('');
-  return { languageSwitch: 'fa → en → fa', draftPreserved: true, sentMessages: 0, layout };
+  return { languageSwitch: 'fa → en → fa', draftPreserved: true, sentMessages: 0, layout, preset, widths, presetMenuOpened: true };
 }
 module.exports = { verifyConversation };
 
