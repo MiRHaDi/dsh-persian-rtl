@@ -5,6 +5,12 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        runtime: [baseline, rc, alpha]
+    env:
+      DSH_TEST_RUNTIME: ${{ matrix.runtime }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -12,6 +18,8 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci --ignore-scripts
+      - if: matrix.runtime != 'baseline'
+        run: npm ci --ignore-scripts --prefix test/runtimes/${{ matrix.runtime }}
       - run: npm run build
       - run: git diff --exit-code -- lib/client.js
       - run: npm test

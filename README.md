@@ -49,7 +49,7 @@ npm run build
 npm test
 ```
 
-Eight automated tests cover every dictionary key and placeholder against a pinned upstream fixture, real published `LocaleRuntime` behavior, `fa-IR` negotiation, English fallback, repeated language changes, unload/reload, restoration of direction, and listener disposal. The runtime tests load the published client factory; unused rendering dependencies throw if called, so they do not pretend to test the settings component.
+Nine automated tests per runtime (27 executions across the compatibility matrix) cover every dictionary key and placeholder against a pinned upstream fixture, real published `LocaleRuntime` behavior, `fa-IR` negotiation, English fallback, repeated language changes, unload/reload, restoration of direction, and listener disposal. The runtime tests load the published client factory; unused rendering dependencies throw if called, so they do not pretend to test the settings component.
 
 The original v0.1.0 plugin was also installed through the real `dsh plugin` command and exercised in the actual Web app using headless system Chrome: Settings language changes `fa → en → fa`, `lang`/`dir`, and zero page errors. LTR code/editor CSS was checked with temporary DOM fixtures under the live plugin; these were removed before the screenshot. No model request, production account or user workspace was used. Full conversation execution and every viewport/theme were not tested.
 
@@ -61,7 +61,19 @@ The unreleased conversation pack was also loaded into the actual DSH 0.1.6-alpha
 
 To repeat the conversation smoke, use an isolated instance with onboarding completed and an existing test workspace. Install Playwright separately, set `DSH_TEST_URL` (private local authenticated URL), `DSH_TEST_WORKSPACE` (the workspace name), and optionally `DSH_TEST_OUTPUT` (capture directory), then run `node test/browser-conversation.cjs`. It refuses a nonempty draft, never sends it, and clears the test draft on success.
 
-The upstream master snapshot `639ed015397290b3745d163aafe02ffee4aa3f84` has 369 conversation keys and changes three existing messages. Coverage and compatibility here are for the pinned alpha revision, not that newer snapshot.
+The 395-key coverage table refers to the original pinned alpha revision. Released 0.2.0-rc.2 and 0.2.1-alpha.1 have 748 and 750 keys respectively across these seven namespaces: 382 still have Persian translations, 13 old keys were removed, and 366/368 new keys fall back to English. The conversation namespace changed one existing message and removed two old keys; its remaining new keys are untranslated.
+
+The published **LocaleRuntime API and English dictionary contracts** are tested against three exact versions:
+
+| Test target | Locale package | Source revision |
+|---|---|---|
+| baseline | 0.1.6-alpha.2 | `ddefc45fbc7f8e46dd73185e68295696d1297887` |
+| rc | 0.2.0-rc.2 | `639ed015397290b3745d163aafe02ffee4aa3f84` |
+| alpha | 0.2.1-alpha.1 | `5badb15009ae1756c3afe0ae0cef1faafc290ccc` |
+
+This checks every current message for matching placeholders or English fallback, and restores the selected version's English dictionary on unload. It is **not full Web-app or plugin-installation validation** for the two newer versions; actual browser evidence above is still for DSH 0.1.6-alpha.2.
+
+Each newer runtime has its own lockfile under `test/runtimes/` because its Cordis peer version differs. Do not combine them with `--force` or `--legacy-peer-deps`. Install a fixture with `npm ci --ignore-scripts --prefix test/runtimes/rc`, then run `npm test` with `DSH_TEST_RUNTIME=rc` in the environment (or `alpha` for the other fixture). Tests assert the loaded version to prevent silently falling back to the baseline. CI runs all three. At the October 4 audit, the locale package's npm `latest` tag pointed to the older 0.0.1-rc.1, so these tests pin versions rather than following that tag.
 
 English fixture source: DeepSeek Harness commit `ddefc45fbc7f8e46dd73185e68295696d1297887`. To update, compare the seven source dictionaries listed in `test/upstream-sources.json`; preserve placeholder names and multiplicity. Translation and code were prepared with AI assistance and reviewed through the validation above; Persian speaker feedback is welcome.
 

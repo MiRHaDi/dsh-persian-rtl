@@ -8,7 +8,17 @@ import { dictionaries } from '../src/fa.js';
 import { installDirection } from '../src/client.js';
 
 const require = createRequire(import.meta.url);
+const runtime = process.env.DSH_TEST_RUNTIME || 'baseline';
+assert.ok(['baseline', 'rc', 'alpha'].includes(runtime), `Unknown runtime: ${runtime}`);
+// Install newer runtimes separately: each has a different Cordis peer range.
+const runtimeRequire = runtime === 'baseline' ? require
+  : createRequire(new URL(`./runtimes/${runtime}/package.json`, import.meta.url));
+const expectedVersion = { baseline: '0.1.6-alpha.2', rc: '0.2.0-rc.2', alpha: '0.2.1-alpha.1' }[runtime];
+assert.equal(runtimeRequire('@deepseek-ai/dsh-client-locale/package.json').version, expectedVersion,
+  'Install the selected isolated fixture; never silently resolve the baseline instead');
 const upstream = JSON.parse(readFileSync(new URL('./upstream-en.json', import.meta.url)));
+const runtimeEnglish = runtime === 'baseline' ? upstream
+  : JSON.parse(readFileSync(new URL(`./runtimes/${runtime}/upstream-en.json`, import.meta.url)));
 const placeholders = text => [...text.matchAll(/\{(\w+)\}/g)].map(m => m[1]).sort();
 
 test('all entries preserve upstream keys and placeholder multiplicity', () => {
@@ -40,7 +50,7 @@ test('published LocaleRuntime: every conversation message interpolates and resto
     }
     f.dispose();
     const english = f.ctx.locale.bind('conversation');
-    for (const [key, value] of Object.entries(upstream.conversation)) {
+    for (const [key, value] of Object.entries(runtimeEnglish.conversation)) {
       const params = Object.fromEntries(placeholders(value).map(name => [name, 'test']));
       assert.equal(english(key, params), format(value, params), `unload: ${key}`);
     }
@@ -69,7 +79,7 @@ function fixture(browserLanguage = 'en', dir = null) {
   const sandbox = { window, document: window.document, navigator: { languages: [browserLanguage], language: browserLanguage }, console };
   const factories = new Map();
   window.__ModuleLoader__ = { load: entry => factories.set(entry.id, entry.factory) };
-  vm.runInNewContext(readFileSync(require.resolve('@deepseek-ai/dsh-client-locale/client'), 'utf8'), sandbox);
+  vm.runInNewContext(readFileSync(runtimeRequire.resolve('@deepseek-ai/dsh-client-locale/client'), 'utf8'), sandbox);
   // These UI dependencies are not used by LocaleRuntime. Fail if the registry
   // unexpectedly starts calling a render dependency, rather than mocking it.
   const noUi = new Proxy({}, { get: (_, key) => { throw new Error(`Unexpected UI dependency: ${String(key)}`); } });
@@ -77,12 +87,32 @@ function fixture(browserLanguage = 'en', dir = null) {
   const owned = [];
   const ctx = { emit() {}, effect(fn) { const dispose = fn(); owned.push(dispose); } };
   ctx.locale = new LocaleRuntime(ctx);
-  for (const [ns, dict] of Object.entries(upstream)) ctx.locale.register(ns, 'en', dict);
+  for (const [ns, dict] of Object.entries(runtimeEnglish)) ctx.locale.register(ns, 'en', dict);
   vm.runInNewContext(readFileSync(new URL('../lib/client.js', import.meta.url), 'utf8'), sandbox);
   const plugin = factories.get('dsh-persian-rtl')();
   const dispose = () => { for (const fn of owned.splice(0).reverse()) fn(); };
   return { ctx, window, plugin, dispose };
 }
+
+test('current host placeholders remain valid and newly added messages fall back to English', () => {
+  const f = fixture();
+  f.plugin.apply(f.ctx);
+  f.ctx.locale.setLocale('fa');
+  try {
+    for (const [namespace, dictionary] of Object.entries(runtimeEnglish)) {
+      const translate = f.ctx.locale.bind(namespace);
+      for (const [key, english] of Object.entries(dictionary)) {
+        const persian = dictionaries[namespace]?.[key];
+        if (persian !== undefined) {
+          assert.deepEqual(placeholders(persian), placeholders(english), `${runtime}: ${namespace}.${key}`);
+        }
+        const params = Object.fromEntries(placeholders(english).map(name => [name, 'نمونه OpenAI 123']));
+        const expected = (persian ?? english).replace(/\{(\w+)\}/g, (_, name) => params[name]);
+        assert.equal(translate(key, params), expected, `${runtime}: ${namespace}.${key}`);
+      }
+    }
+  } finally { f.dispose(); }
+});
 
 test('published LocaleRuntime: select, interpolation, English fallback, unload and reload', () => {
   const f = fixture();

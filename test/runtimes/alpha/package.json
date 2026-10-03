@@ -1,0 +1,7 @@
+{
+  "name": "persian-locale-alpha-compatibility",
+  "private": true,
+  "dependencies": {
+    "@deepseek-ai/dsh-client-locale": "0.2.1-alpha.1"
+  }
+}
