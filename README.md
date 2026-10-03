@@ -10,7 +10,7 @@ The conversation translations are **unreleased** on this branch. Release v0.1.0 
 
 ## Install
 
-Tested with **DeepSeek Harness 0.1.6-alpha.2**, Node 24.15.0 and installed Google Chrome 153.0.8010.52 on Windows. This is an alpha API; earlier releases are not supported and later compatibility is not guaranteed. Use an existing DSH installation with this version. The plugin does not install or upgrade DSH.
+Tested with **DeepSeek Harness 0.1.6-alpha.2**, Node 24.15.0 and installed Google Chrome 153.0.8010.52 on Windows. This is an alpha API; earlier releases are not supported and later compatibility is not guaranteed. Use that DSH version for the published v0.1.0 release. The unreleased branch tarball was additionally installed and removed with the official CLI on **DSH 0.2.0-rc.2**, and its Web UI was tested with Chrome 154.0.8037.98. The published v0.1.0 asset was not retested on that newer host. The plugin does not install or upgrade DSH.
 
 Download `dsh-persian-rtl-0.1.0.tgz` from [Releases](https://github.com/MiRHaDi/dsh-persian-rtl/releases). With the Web profile already created, run:
 
@@ -71,7 +71,7 @@ The published **LocaleRuntime API and English dictionary contracts** are tested 
 | rc | 0.2.0-rc.2 | `639ed015397290b3745d163aafe02ffee4aa3f84` |
 | alpha | 0.2.1-alpha.1 | `5badb15009ae1756c3afe0ae0cef1faafc290ccc` |
 
-This checks every current message for matching placeholders or English fallback, and restores the selected version's English dictionary on unload. It is **not full Web-app or plugin-installation validation** for the two newer versions; actual browser evidence above is still for DSH 0.1.6-alpha.2.
+This checks every current message for matching placeholders or English fallback, and restores the selected version's English dictionary on unload. For **0.2.1-alpha.1**, this is still API/dictionary validation only. For **0.2.0-rc.2**, a separate actual-app check installed the local branch tarball with `dsh plugin --profile web add`, exercised the Web UI, removed it with `dsh plugin --profile web remove`, and relaunched successfully without the Persian selector entry or RTL stylesheet.
 
 Each newer runtime has its own lockfile under `test/runtimes/` because its Cordis peer version differs. Do not combine them with `--force` or `--legacy-peer-deps`. Install a fixture with `npm ci --ignore-scripts --prefix test/runtimes/rc`, then run `npm test` with `DSH_TEST_RUNTIME=rc` in the environment (or `alpha` for the other fixture). Tests assert the loaded version to prevent silently falling back to the baseline. CI runs all three. At the October 4 audit, the locale package's npm `latest` tag pointed to the older 0.0.1-rc.1, so these tests pin versions rather than following that tag.
 
@@ -80,3 +80,11 @@ English fixture source: DeepSeek Harness commit `ddefc45fbc7f8e46dd73185e6829569
 ## Contributing
 
 Report missing translations with a namespace/key or a screenshot without credentials. For layout bugs, include DSH/browser versions and minimal mixed-language text. PRs should include a regression test and describe the user-visible behavior. This is a community package, not an official DeepSeek product or a claim of membership in its core team.
+
+### Current release-candidate installation smoke
+
+On October 4 the branch package at `62501c4` (local tarball SHA256 `0856ee6a9976805ed8aab18a0f7754cbbcaf468bce2f5ce00bd4251640955700`) was installed into an isolated DSH 0.2.0-rc.2 Web profile. Chrome 154.0.8037.98 confirmed language switching, an unchanged mixed-language draft, the preset menu, and widths 320/360/768/1280 without page errors or document overflow. The same browser smoke was rerun on 0.1.6-alpha.2.
+
+The smoke now confirms saved language in independent browser contexts with the opposite browser locale before capturing screenshots. The language row can show an optimistic value before Host settings settle; the older smoke could capture an English frame between Persian assertions. Language and direction are checked around captures and at every tested width. This strengthens the test; it does not replace or intercept the Host's locale persistence implementation.
+
+After CLI removal and relaunch on the RC, English fallback worked even with a Persian browser preference, the Persian selector entry and stylesheet were absent, and the profile no longer referenced the plugin. No model request was sent. These checks cover installation, removal and the tested Web controls, not every agent tool or a full model conversation. Machine-readable results are in `docs/rc-web-result.json`, `docs/rc-uninstall-result.json`, and `docs/baseline-web-result.json`.
