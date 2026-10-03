@@ -1,0 +1,54 @@
+{
+  "app": "0.2.0-rc.2",
+  "browser": "154.0.8037.98",
+  "installation": "dsh plugin --profile web add local tarball",
+  "errors": [],
+  "languageSwitch": "fa → en → fa",
+  "persistedLanguageVerified": true,
+  "draftPreserved": true,
+  "sentMessages": 0,
+  "layout": {
+    "viewport": 360,
+    "documentWidth": 360
+  },
+  "preset": {
+    "text": "Standard mode",
+    "available": 91,
+    "required": 91
+  },
+  "widths": [
+    {
+      "viewport": 320,
+      "documentWidth": 320,
+      "required": 91,
+      "available": 91,
+      "left": 101.484375,
+      "right": 246
+    },
+    {
+      "viewport": 360,
+      "documentWidth": 360,
+      "required": 91,
+      "available": 91,
+      "left": 141.484375,
+      "right": 286
+    },
+    {
+      "viewport": 768,
+      "documentWidth": 768,
+      "required": 91,
+      "available": 91,
+      "left": 387.59375,
+      "right": 532.109375
+    },
+    {
+      "viewport": 1280,
+      "documentWidth": 1280,
+      "required": 91,
+      "available": 91,
+      "left": 551.09375,
+      "right": 695.609375
+    }
+  ],
+  "presetMenuOpened": true
+}
