@@ -93,3 +93,9 @@ After CLI removal and relaunch on the RC, English fallback worked even with a Pe
 ### October 28 release compatibility
 
 The pinned `current` fixture tests the published 0.2.1-rc.2 locale API against the seven English dictionaries from upstream tag `dsh-v0.2.1-rc.2`. Source paths and the exact commit are recorded in `test/runtimes/current/upstream-sources.json`. Install with `npm ci --ignore-scripts --prefix test/runtimes/current`, then run `npm test` with `DSH_TEST_RUNTIME=current`. This adds API, placeholder, fallback and unload coverage; it is not an actual-app or browser result for 0.2.1-rc.2. The earlier browser results above retain their original version scope. The fixture is pinned even when npm tags move.
+
+### October 28 actual-app verification of 0.2.1-rc.2
+
+The local package from a87c044 was installed through the official plugin CLI into a new isolated DSH 0.2.1-rc.2 Web profile. Headless system Chrome 155.0.8059.85 verified Persian/English/Persian switching, an unchanged mixed-language draft, saved Persian preference in a fresh English-browser context, and widths 320/360/768/1280 without page errors or horizontal document overflow. No model request was sent. The latest UI moves Settings under the account menu; its sign-in prompt was dismissed rather than using an actual account.
+
+After official CLI removal and relaunch, the app returned to English even with Persian browser preference; `dir=rtl` and the plugin stylesheet were absent. Results are recorded in `docs/current-web-result.json` and `docs/current-uninstall-result.json`. These are scoped checks of language/layout and installation/removal, not every model tool or app workflow. The four-runtime API matrix also passed all eight GitHub jobs on a87c044.
