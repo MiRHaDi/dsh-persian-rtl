@@ -9,11 +9,11 @@ import { installDirection } from '../src/client.js';
 
 const require = createRequire(import.meta.url);
 const runtime = process.env.DSH_TEST_RUNTIME || 'baseline';
-assert.ok(['baseline', 'rc', 'alpha'].includes(runtime), `Unknown runtime: ${runtime}`);
+assert.ok(['baseline', 'rc', 'alpha', 'current'].includes(runtime), `Unknown runtime: ${runtime}`);
 // Install newer runtimes separately: each has a different Cordis peer range.
 const runtimeRequire = runtime === 'baseline' ? require
   : createRequire(new URL(`./runtimes/${runtime}/package.json`, import.meta.url));
-const expectedVersion = { baseline: '0.1.6-alpha.2', rc: '0.2.0-rc.2', alpha: '0.2.1-alpha.1' }[runtime];
+const expectedVersion = { baseline: '0.1.6-alpha.2', rc: '0.2.0-rc.2', alpha: '0.2.1-alpha.1', current: '0.2.1-rc.2' }[runtime];
 assert.equal(runtimeRequire('@deepseek-ai/dsh-client-locale/package.json').version, expectedVersion,
   'Install the selected isolated fixture; never silently resolve the baseline instead');
 const upstream = JSON.parse(readFileSync(new URL('./upstream-en.json', import.meta.url)));

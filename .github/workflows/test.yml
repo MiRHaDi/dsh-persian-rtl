@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runtime: [baseline, rc, alpha]
+        runtime: [baseline, rc, alpha, current]
     env:
       DSH_TEST_RUNTIME: ${{ matrix.runtime }}
     steps:
