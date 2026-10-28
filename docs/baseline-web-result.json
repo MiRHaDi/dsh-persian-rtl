@@ -1,0 +1,55 @@
+{
+  "browser": "154.0.8037.98",
+  "app": "0.1.6-alpha.2",
+  "errors": [],
+  "lang": "fa",
+  "dir": "rtl",
+  "languageSwitch": "fa → en → fa",
+  "persistedLanguageVerified": true,
+  "draftPreserved": true,
+  "sentMessages": 0,
+  "layout": {
+    "viewport": 360,
+    "documentWidth": 360
+  },
+  "preset": {
+    "text": "Standard mode",
+    "available": 91,
+    "required": 91
+  },
+  "widths": [
+    {
+      "viewport": 320,
+      "documentWidth": 320,
+      "required": 91,
+      "available": 91,
+      "left": 101.484375,
+      "right": 246
+    },
+    {
+      "viewport": 360,
+      "documentWidth": 360,
+      "required": 91,
+      "available": 91,
+      "left": 141.484375,
+      "right": 286
+    },
+    {
+      "viewport": 768,
+      "documentWidth": 768,
+      "required": 91,
+      "available": 91,
+      "left": 405.734375,
+      "right": 550.25
+    },
+    {
+      "viewport": 1280,
+      "documentWidth": 1280,
+      "required": 91,
+      "available": 91,
+      "left": 570.734375,
+      "right": 715.25
+    }
+  ],
+  "presetMenuOpened": true
+}

@@ -1,0 +1,35 @@
+{
+  "version": "0.2.1-rc.2",
+  "pluginHead": "a87c044",
+  "chrome": "155.0.8059.85",
+  "draftCycle": true,
+  "persistedLocale": true,
+  "results": [
+    {
+      "width": 1280,
+      "lang": "fa",
+      "dir": "rtl",
+      "overflow": false
+    },
+    {
+      "width": 768,
+      "lang": "fa",
+      "dir": "rtl",
+      "overflow": false
+    },
+    {
+      "width": 360,
+      "lang": "fa",
+      "dir": "rtl",
+      "overflow": false
+    },
+    {
+      "width": 320,
+      "lang": "fa",
+      "dir": "rtl",
+      "overflow": false
+    }
+  ],
+  "errors": [],
+  "scope": "Actual app, no model requests"
+}

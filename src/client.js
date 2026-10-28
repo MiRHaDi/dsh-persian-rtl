@@ -27,6 +27,12 @@ html[data-dsh-persian-rtl] :is(pre, code, kbd, samp, .xterm, .monaco-editor, .cm
   text-align: start;
 }
 html[data-dsh-persian-rtl] :is(p, textarea) { unicode-bidi: plaintext; }
+/* Slot identity is public; avoid the host's generated CSS-module class names.
+   Let the workspace and preset controls wrap before their labels are crushed. */
+html[data-dsh-persian-rtl] :has(> [data-slot="conversation.hero.agentPreset"]) {
+  flex-wrap: wrap;
+  row-gap: 4px;
+}
 `;
   doc.head.append(style);
   let owned = false;

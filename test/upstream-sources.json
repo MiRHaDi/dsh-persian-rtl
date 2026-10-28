@@ -6,6 +6,7 @@
     "workspace": "packages/client/ui-workspace/src/client/locales.ts",
     "common": "packages/client/locale/src/locales/en.ts",
     "settings.locale": "packages/client/locale/src/locales/settings.ts",
-    "chat": "packages/client/ui-chat/src/client/locale.ts"
+    "chat": "packages/client/ui-chat/src/client/locale.ts",
+    "conversation": "packages/client/ui-conversation/src/client/locales.ts"
   }
 }

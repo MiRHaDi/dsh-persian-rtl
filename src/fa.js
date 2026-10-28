@@ -1,5 +1,8 @@
-/** Complete dictionaries for six namespaces at the pinned upstream revision. */
+import { conversation } from './conversation-fa.js';
+
+/** Complete dictionaries for seven namespaces at the pinned upstream revision. */
 export const dictionaries = {
+  conversation,
   sidebar: {
     'session.new': 'نشست جدید', 'session.new.label': 'نشست جدید',
     'toggle.open': 'باز کردن نوار کناری', 'toggle.collapse': 'جمع کردن نوار کناری', 'panels.label': 'پنل‌های عمومی',
@@ -10,8 +13,8 @@ export const dictionaries = {
     'desktop.update.verifying': 'در حال بررسی صحت فایل‌های به‌روزرسانی…',
     'desktop.update.installing': 'در حال آماده‌سازی برای راه‌اندازی مجدد…',
     'desktop.update.ready': 'نصب و راه‌اندازی مجدد', 'desktop.update.retry': 'تلاش دوباره برای به‌روزرسانی',
-    'desktop.update.versionDetail': '{label} — V{version}',
-    'desktop.update.downloadDetail': 'در حال دریافت به‌روزرسانی: {percent}٪\nنسخهٔ مقصد: V{version}',
+    'desktop.update.versionDetail': '{label}: {version}',
+    'desktop.update.downloadDetail': 'در حال دریافت به‌روزرسانی: {percent}٪\nنسخهٔ مقصد: {version}',
     'desktop.update.checkFailed': 'بررسی به‌روزرسانی ناموفق بود. بعداً دوباره تلاش کنید.',
     'desktop.update.downloadFailed': 'دریافت به‌روزرسانی ناموفق بود. دوباره تلاش کنید.',
     'desktop.update.installFailed': 'نصب به‌روزرسانی ناموفق بود. بعداً دوباره تلاش کنید.',
@@ -19,7 +22,7 @@ export const dictionaries = {
     'desktop.update.downloadNetworkFailed': 'دریافت به‌روزرسانی ناموفق بود. ارتباط قطع شد؛ شبکه را بررسی کنید و دوباره تلاش کنید.',
     'desktop.update.installNetworkFailed': 'نصب به‌روزرسانی ناموفق بود. ارتباط قطع شد؛ شبکه را بررسی کنید و دوباره تلاش کنید.',
     'desktop.update.stopFailed': 'توقف امن کارها ممکن نشد. به‌روزرسانی نصب نشد. بعداً دوباره تلاش کنید.',
-    'desktop.update.tasksChanged': 'کارهای جدیدی شروع شدند. تأییدیهٔ به‌روزرسانی را دوباره بررسی کنید.',
+    'desktop.update.tasksChanged': 'کارهای جدیدی شروع شده‌اند؛ برای توقف کارها و به‌روزرسانی دوباره تأیید کنید.',
     'desktop.update.tasksUnavailable': 'وضعیت کارها در دسترس نیست. پس از آماده شدن فضای کاری، به‌روزرسانی را دوباره امتحان کنید.',
     'title': 'تنظیمات', 'close': 'بستن', 'openDocument': 'باز کردن فایل پیکربندی',
     'openDocument.error': 'باز کردن فایل پیکربندی ناموفق بود', 'general.nav': 'عمومی',
@@ -34,7 +37,7 @@ export const dictionaries = {
     'orderBy.label': 'مرتب‌سازی بر اساس', 'orderBy.manual': 'دستی', 'orderBy.updated': 'آخرین به‌روزرسانی',
     'sessions.expand': 'نمایش {n} نشست دیگر', 'sessions.collapse': 'نمایش کمتر',
     'empty.none': 'هنوز نشستی وجود ندارد', 'empty.noMatches': 'موردی یافت نشد', 'workspace.add': 'افزودن فضای کاری',
-    'search.sessions.aria': 'جستجوی نشست‌ها', 'search.placeholder': 'جستجوی نشست‌ها…',
+    'search.sessions.aria': 'جستجوی نشست‌ها', 'search.placeholder': 'جستجوی نام نشست‌ها',
     'search.clear': 'پاک کردن جستجو', 'search.results.aria': 'نتایج جستجو',
     'search.pending': 'در حال جستجو در تاریخچهٔ نشست‌ها…',
     'search.unavailable': 'جستجوی محتوا موقتاً در دسترس نیست. نتایج بر اساس نام نمایش داده می‌شوند.',
@@ -95,8 +98,8 @@ export const dictionaries = {
     'chat.turnNavigation.jump': 'رفتن به نوبت {turn}',
     'chat.turnNavigation.jumpLoad': 'بارگذاری و رفتن به نوبت {turn}',
     'chat.turnNavigation.turn': 'نوبت {turn}',
-    'settings.transcript.title': 'نمایش گفت‌وگو',
-    'settings.transcript.description': 'نمایش جزئیات پردازش در نوبت‌های پایان‌یافته',
+    'settings.transcript.title': 'جزئیات کار',
+    'settings.transcript.description': 'میزان جزئیات فرایند کار را تنظیم کنید',
     'settings.transcript.normal': 'عادی',
     'settings.transcript.compact': 'فشرده',
     'fileOpen.title': 'باز کردن فایل ناموفق بود',

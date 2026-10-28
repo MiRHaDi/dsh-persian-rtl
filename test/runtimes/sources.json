@@ -1,0 +1,16 @@
+{
+  "repository": "https://github.com/deepseek-ai/deepseek-harness",
+  "paths": "../upstream-sources.json",
+  "versions": {
+    "rc": {
+      "packageVersion": "0.2.0-rc.2",
+      "tag": "dsh-v0.2.0-rc.2",
+      "revision": "639ed015397290b3745d163aafe02ffee4aa3f84"
+    },
+    "alpha": {
+      "packageVersion": "0.2.1-alpha.1",
+      "tag": "dsh-v0.2.1-alpha.1",
+      "revision": "5badb15009ae1756c3afe0ae0cef1faafc290ccc"
+    }
+  }
+}
